@@ -12,7 +12,6 @@ import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.
     storageBucket: "iot-cseh.firebasestorage.app",
     messagingSenderId: "122411437092",
     appId: "1:122411437092:web:6c4a05110683433e14dcb1"
-
   };
 
 
@@ -26,8 +25,6 @@ function xorDecrypt(encryptedHex, encryptionKey) {
         .map(char => String.fromCharCode(char.charCodeAt(0) ^ encryptionKey)) // XOR operation
         .join(''); // Join back into a string
 }
-
-
 
 // Authenticate user
 export function authenticate() {
@@ -52,9 +49,16 @@ export function authenticate() {
         if (enteredPassword === correctPassword) {
             // Correct password
             fetchAndDisplayData_decrypted(enteredUsername);
-        } else {
-            fetchAndDisplayData(enteredUsername);
+        } 
+        else if(correctPassword==null){
+            alert("Username Not In Database")
+            logout()
+            return;
         }
+        else {
+            fetchAndDisplayData(enteredUsername); 
+        }
+        
     }, (error) => {
         console.error("Error authenticating user:", error);
         alert("An error occurred while logging in. Please try again.");
@@ -73,7 +77,6 @@ function fetchAndDisplayData(userId) {
         console.log(value_from_db)
         document.getElementById("value-cseh").innerHTML = value_from_db;
     });
-    
     
 }
 
@@ -96,31 +99,6 @@ function fetchAndDisplayData_decrypted(userId) {
     });
 }
 
-
-
-// Auto-login if credentials are stored
-// function autoLogin() {
-//     const savedUsername = localStorage.getItem('username');
-//     const savedPassword = localStorage.getItem('password');
-
-//     if (savedUsername && savedPassword) {
-//         const passwordRef = ref(database, `/${savedUsername}/cseh_password`);
-//         onValue(passwordRef, (snapshot) => {
-//             const correctPassword = snapshot.val();
-//             if (savedPassword === correctPassword) {
-//                 document.getElementById('login-container').style.display = 'none';
-//                 document.getElementById('data-container').style.display = 'block';
-
-//                 fetchAndDisplayData(savedUsername);
-//             } else {
-//                 alert('Saved credentials are invalid. Please log in again.');
-//                 localStorage.clear();
-//             }
-//         }, (error) => {
-//             console.error("Error checking stored credentials:", error);
-//         });
-//     }
-// }
 // Logout Function
 function logout() {
     // Clear stored credentials
@@ -142,8 +120,6 @@ document.getElementById('login-form').addEventListener('submit', (e) => {
     authenticate();
 });
 
-// // Trigger auto-login on page load
-// document.addEventListener('DOMContentLoaded', autoLogin);
 
 // Attach event listener to the logout button
 document.getElementById('logout-button').addEventListener('click', logout);
